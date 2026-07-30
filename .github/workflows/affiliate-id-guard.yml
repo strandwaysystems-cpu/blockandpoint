@@ -1,0 +1,35 @@
+# Fails the build if any placeholder affiliate ID is committed.
+# Enforces the non-negotiable "no placeholder IDs" rule from
+# docs/manus-protocol.md and docs/infrastructure-stack.md.
+
+name: affiliate-id-guard
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  scan-for-placeholders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan for placeholder affiliate IDs
+        run: |
+          PATTERNS='YOUR_AID|AFFILIATE_ID_HERE|YOUR_AFFILIATE_ID|REPLACE_ME|TODO_AFFILIATE|XXXX-XXXX|your-affiliate-id|INSERT_ID'
+          echo "Scanning for placeholder affiliate IDs..."
+          MATCHES=$(grep -rIn -E "$PATTERNS" . \
+            --include='*.html' --include='*.htm' \
+            --include='*.js' --include='*.jsx' --include='*.ts' --include='*.tsx' \
+            --include='*.astro' --include='*.md' --include='*.json' \
+            --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git \
+            --exclude-dir=.github || true)
+          if [ -n "$MATCHES" ]; then
+            echo "::error::Placeholder affiliate ID(s) found. Replace with real IDs before deploy."
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "Clean — no placeholder affiliate IDs found."
