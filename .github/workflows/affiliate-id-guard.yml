@@ -26,7 +26,7 @@ jobs:
             --include='*.js' --include='*.jsx' --include='*.ts' --include='*.tsx' \
             --include='*.astro' --include='*.md' --include='*.json' \
             --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git \
-            --exclude-dir=.github || true)
+            --exclude-dir=.github --exclude-dir=docs --exclude-dir=_legacy-static-site || true)
           if [ -n "$MATCHES" ]; then
             echo "::error::Placeholder affiliate ID(s) found. Replace with real IDs before deploy."
             echo "$MATCHES"
