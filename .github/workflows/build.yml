@@ -1,0 +1,55 @@
+# Verifies the site builds. That is the whole job.
+#
+# THE RULE: GitHub checks. Cloudflare deploys.
+#
+# This workflow must never deploy, never push to a branch, and never call
+# actions/upload-artifact. Actions artifact storage is a single quota shared
+# by every repo on the account, so one repo uploading its dist/ fills it for
+# all the others — and the failed upload turns a passing build red while the
+# live site is perfectly healthy. Cloudflare builds each repo from git on its
+# own and has no such limit.
+#
+# This file is byte-identical in every Strandway affiliate repo. If it needs
+# to change, change it in all of them.
+name: build
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Optional per-repo check. Sites built on the v2 content engine ship
+      # scripts/check-affiliate-links.mjs, which scans content frontmatter for
+      # empty or placeholder affiliate URLs. Repos without it skip this step,
+      # which is what keeps this file the same everywhere.
+      - name: Check affiliate links in content
+        run: |
+          if [ -f scripts/check-affiliate-links.mjs ]; then
+            node scripts/check-affiliate-links.mjs
+          else
+            echo "No scripts/check-affiliate-links.mjs in this repo - skipping."
+          fi
+
+      - name: Build
+        run: npm run build
