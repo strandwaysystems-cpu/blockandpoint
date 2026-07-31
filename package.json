@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/check-affiliate-links.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check:links": "node scripts/check-affiliate-links.mjs"

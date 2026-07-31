@@ -26,10 +26,11 @@ const dist = join(root, 'dist');
 const errors = [];
 const warnings = [];
 
-if (!existsSync(dist)) {
-  console.error('dist/ not found — run `npm run build` first.');
-process.exit(1);
-}
+// Two modes. The shared build workflow runs this BEFORE `astro build` (as a
+// data-only lint) and `npm run build` runs it again afterwards via postbuild,
+// when dist/ exists and the full HTML checks can run. A missing dist/ is
+// therefore normal, not an error.
+const hasDist = existsSync(dist);
 
 const affiliates = JSON.parse(
   readFileSync(join(root, 'src/data/affiliate_links.json'), 'utf8'),
@@ -59,6 +60,19 @@ for (const [slug, link] of Object.entries(affiliates.links)) {
   for (const field of ['label', 'partner', 'vertical']) {
     if (!link[field]) errors.push(`affiliate_links.json: "${slug}" is missing "${field}"`);
   }
+}
+
+// --- Data-only mode: stop here when there is no build to inspect -------------
+if (!hasDist) {
+  if (errors.length) {
+    console.error(`\n${errors.length} error(s) in affiliate_links.json:`);
+    for (const e of errors) console.error(`  ✗ ${e}`);
+    process.exit(1);
+  }
+  console.log(
+    `✓ ${slugs.size} affiliate links valid (data-only check — no dist/ yet; the full link walk runs after build).`,
+  );
+  process.exit(0);
 }
 
 // --- Walk dist/ --------------------------------------------------------------
