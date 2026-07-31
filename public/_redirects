@@ -1,0 +1,29 @@
+# Cloudflare Pages edge redirects. One 301 per URL that moved during the
+# conversion to the page-type engine, so nothing that is already indexed or
+# linked ends at a 404. Covers the clean, .html and trailing-slash variants of
+# each old URL because all three forms were reachable on the previous build.
+#
+# Apache/Hostinger uses public/.htaccess for the same rules.
+
+# The old flat blog became The Edit silo
+/blog                       /edit                              301
+/blog/                      /edit                              301
+/blog.html                  /edit                              301
+
+# The brand directory moved out of /collections
+/collections                /brands                            301
+/collections/               /brands                            301
+/collections.html           /brands                            301
+
+# Deep links into individual brand anchors on the old directory
+/collections#atp-atelier    /brands/atp-atelier                301
+/collections#flattered      /brands/flattered                  301
+/collections#vagabond       /brands/vagabond                   301
+
+# The one real article moved into the money silo
+/atp-atelier-vs-flattered       /edit/atp-atelier-vs-flattered  301
+/atp-atelier-vs-flattered/      /edit/atp-atelier-vs-flattered  301
+/atp-atelier-vs-flattered.html  /edit/atp-atelier-vs-flattered  301
+
+# Search Console continuity — the sitemap moved to the index form
+/sitemap.xml                /sitemap-index.xml                 301

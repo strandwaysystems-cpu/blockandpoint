@@ -1,0 +1,60 @@
+---
+// Reviews — silo index for transactional_review pages.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import site from '../../data/site_architecture.json';
+
+const pages = await Astro.glob('./*.md');
+const items = pages
+  .map((p) => ({ url: p.url, ...p.frontmatter }))
+  .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Block & Point brand reviews',
+    itemListElement: items.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: it.title,
+      url: new URL(it.url, site.base_url).href,
+    })),
+  },
+];
+---
+<BaseLayout
+  title="Honest Reviews — Block & Point"
+  description="Single-brand verdicts on Scandinavian heel makers: what you're paying for, where each brand falls short, and who should skip it."
+  activeNav="reviews"
+  pageType="transactional_review"
+  jsonLd={jsonLd}
+>
+  <section class="page-hero page-hero--editorial">
+    <div class="container">
+      <div class="page-hero-content reveal">
+        <span class="section-label">Honest Reviews</span>
+        <h1 class="page-hero-title">One Brand.<br /><em>One Verdict.</em></h1>
+        <p class="page-hero-subtitle">
+          What each brand actually gets you, where it falls short, and who should buy something
+          else instead.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="silo-grid">
+        {items.map((it) => (
+          <article class="silo-card reveal">
+            <span class="silo-card__type">
+              Review{it.rating ? ` · ${it.rating} / 5` : ''}
+            </span>
+            <h2 class="silo-card__title"><a href={it.url}>{it.title}</a></h2>
+            <p class="silo-card__desc">{it.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

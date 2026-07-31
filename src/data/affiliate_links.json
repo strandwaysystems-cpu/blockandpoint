@@ -1,0 +1,179 @@
+{
+  "_note": "Single source of truth for every outbound commercial link on blockandpoint.com. Pages NEVER hardcode a retailer URL — they reference a slug from `links` and the /go/[slug] route resolves it. When an affiliate network approves this site, edit ONLY this file: paste the tracked URL into `url`, set `monetized: true`, and every CTA across the site becomes a commissioned link with no page edits. NO placeholder IDs anywhere (enforced by .github/workflows/affiliate-id-guard.yml).",
+
+  "_status": "PRE-APPROVAL. No network has approved this site yet, so every `url` below is the plain, real, working retailer/brand URL and `monetized` is false. Links work and earn nothing — they are honest, not broken. See docs/MONETIZATION.md for the application runbook and the exact swap procedure.",
+
+  "_url_policy": "Prefer official brand domains and retailer SEARCH urls over guessed brand-ID deep links. A search URL always resolves; a guessed /brands/name--12345 path 404s when the ID is wrong, and dead outbound links are a documented cause of affiliate-network rejection.",
+
+  "networks": {
+    "awin": {
+      "status": "not_applied",
+      "publisher_id": null,
+      "covers": ["atp-atelier", "zalando", "asos"],
+      "notes": "Best single network for this niche — most European fashion brands run their programmes here. Apply first."
+    },
+    "rakuten": {
+      "status": "not_applied",
+      "publisher_id": null,
+      "covers": ["nordstrom", "farfetch"],
+      "notes": "Nordstrom is the highest-value US retailer for these brands. Rakuten review is stricter on traffic than Awin."
+    },
+    "impact": {
+      "status": "not_applied",
+      "publisher_id": null,
+      "covers": ["revolve", "net-a-porter"],
+      "notes": "Check per-brand; several luxury retailers moved to Impact."
+    },
+    "direct": {
+      "status": "not_applied",
+      "publisher_id": null,
+      "covers": ["flattered", "roccamore", "aeyde", "vagabond"],
+      "notes": "Smaller Nordic brands often run in-house or Shopify Collabs programmes. Email the brand directly once traffic exists — these convert best because the audience matches exactly."
+    }
+  },
+
+  "verticals": {
+    "footwear-brand-direct": "Buying straight from the Nordic brand's own store",
+    "footwear-retailer": "Multi-brand retailer (Nordstrom, Farfetch, ASOS, Zalando)",
+    "shoe-care": "Care, repair and fit accessories"
+  },
+
+  "links": {
+    "atp-atelier": {
+      "label": "ATP Atelier",
+      "partner": "atp-atelier",
+      "vertical": "footwear-brand-direct",
+      "url": "https://us.atpatelier.com/collections/shoes",
+      "network": "awin",
+      "monetized": false
+    },
+    "atp-atelier-farfetch": {
+      "label": "ATP Atelier at Farfetch",
+      "partner": "farfetch",
+      "vertical": "footwear-retailer",
+      "url": "https://www.farfetch.com/shopping/women/atp-atelier/items.aspx",
+      "network": "rakuten",
+      "monetized": false
+    },
+    "flattered": {
+      "label": "Flattered",
+      "partner": "flattered",
+      "vertical": "footwear-brand-direct",
+      "url": "https://flattered.com/collections/all-shoes",
+      "network": "direct",
+      "monetized": false
+    },
+    "flattered-nordstrom": {
+      "label": "Flattered at Nordstrom",
+      "partner": "nordstrom",
+      "vertical": "footwear-retailer",
+      "url": "https://www.nordstrom.com/sr?keyword=flattered%20shoes",
+      "network": "rakuten",
+      "monetized": false
+    },
+    "vagabond": {
+      "label": "Vagabond Shoemakers",
+      "partner": "vagabond",
+      "vertical": "footwear-brand-direct",
+      "url": "https://www.vagabond.com/us/",
+      "network": "direct",
+      "monetized": false
+    },
+    "vagabond-nordstrom": {
+      "label": "Vagabond at Nordstrom",
+      "partner": "nordstrom",
+      "vertical": "footwear-retailer",
+      "url": "https://www.nordstrom.com/brands/vagabond-shoemakers--10003883",
+      "network": "rakuten",
+      "monetized": false
+    },
+    "vagabond-asos": {
+      "label": "Vagabond at ASOS",
+      "partner": "asos",
+      "vertical": "footwear-retailer",
+      "url": "https://www.asos.com/search/?q=vagabond",
+      "network": "awin",
+      "monetized": false
+    },
+    "roccamore": {
+      "label": "Roccamore",
+      "partner": "roccamore",
+      "vertical": "footwear-brand-direct",
+      "url": "https://roccamore.com/",
+      "network": "direct",
+      "monetized": false
+    },
+    "aeyde": {
+      "label": "Aeyde",
+      "partner": "aeyde",
+      "vertical": "footwear-brand-direct",
+      "url": "https://www.aeyde.com/collections/all-footwear",
+      "network": "direct",
+      "monetized": false
+    },
+    "aeyde-farfetch": {
+      "label": "Aeyde at Farfetch",
+      "partner": "farfetch",
+      "vertical": "footwear-retailer",
+      "url": "https://www.farfetch.com/shopping/women/aeyde/items.aspx",
+      "network": "rakuten",
+      "monetized": false
+    },
+    "anonymous-copenhagen": {
+      "label": "Anonymous Copenhagen",
+      "partner": "anonymous-copenhagen",
+      "vertical": "footwear-brand-direct",
+      "url": "https://www.zalando.co.uk/anonymous-copenhagen/",
+      "network": "awin",
+      "monetized": false
+    },
+    "anonymous-copenhagen-nordstrom": {
+      "label": "Anonymous Copenhagen at Nordstrom",
+      "partner": "nordstrom",
+      "vertical": "footwear-retailer",
+      "url": "https://www.nordstrom.com/sr?keyword=anonymous%20copenhagen",
+      "network": "rakuten",
+      "monetized": false
+    },
+    "aeyde-net-a-porter": {
+      "label": "Aeyde at NET-A-PORTER",
+      "partner": "net-a-porter",
+      "vertical": "footwear-retailer",
+      "url": "https://www.net-a-porter.com/en-gb/shop/designer/aeyde",
+      "network": "impact",
+      "monetized": false
+    },
+    "cos": {
+      "label": "COS",
+      "partner": "cos",
+      "vertical": "footwear-retailer",
+      "url": "https://www.cos.com/en_gbp/women/shoes.html",
+      "network": "awin",
+      "monetized": false
+    },
+    "arket": {
+      "label": "ARKET",
+      "partner": "arket",
+      "vertical": "footwear-retailer",
+      "url": "https://www.arket.com/en_gbp/women/shoes.html",
+      "network": "awin",
+      "monetized": false
+    },
+    "other-stories": {
+      "label": "& Other Stories",
+      "partner": "other-stories",
+      "vertical": "footwear-retailer",
+      "url": "https://www.stories.com/en_gbp/shoes.html",
+      "network": "awin",
+      "monetized": false
+    },
+    "sania-dmina": {
+      "label": "Sania d'Mina",
+      "partner": "sania-dmina",
+      "vertical": "footwear-brand-direct",
+      "url": "https://www.farfetch.com/shopping/women/sania-d-mina/items.aspx",
+      "network": "rakuten",
+      "monetized": false
+    }
+  }
+}

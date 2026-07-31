@@ -1,0 +1,200 @@
+{
+  "_note": "The brand directory, rendered by src/pages/brands/index.astro. Copy migrated from the original collections page. `ctas` reference slugs in affiliate_links.json — never a retailer URL, so monetisation stays a one-file change. `hub` links to the brand's own page where one exists.",
+
+  "brands": [
+    {
+      "slug": "atp-atelier",
+      "name": "ATP Atelier",
+      "country": "sweden",
+      "origin": "Sweden · Since 2013",
+      "priceRange": "$250 – $450",
+      "tier": "Tier 1 — Anchor Brand",
+      "tagline": "The leather obsessives.",
+      "image": "/editorial-1.png",
+      "imageAlt": "ATP Atelier leather heel editorial",
+      "hub": "/brands/atp-atelier",
+      "body": [
+        "Founded in Skåne by Alexander Torlén and Per Franssén, ATP Atelier built its reputation on a single conviction: that vegetable-tanned leather, properly sourced and honestly constructed, is the only material worthy of a well-designed shoe. Their heels — mostly block and stacked — carry the weight of that philosophy in every stitch.",
+        "The result is footwear that improves with age. Unlike synthetic-sole shoes that degrade, ATP Atelier pairs are resoleable. They have collaborated with Vogue Scandinavia and remain a fixture of Stockholm Fashion Week — aspirational without being inaccessible."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Block mules, leather sandals, stacked heels" },
+        { "label": "Materials", "value": "Vegetable-tanned leather, recycled linings" },
+        { "label": "Sizing", "value": "EU 35–42, half sizes available" },
+        { "label": "Ships from", "value": "Sweden, worldwide" }
+      ],
+      "ctas": [
+        { "slug": "atp-atelier", "label": "Shop ATP Atelier", "primary": true },
+        { "slug": "atp-atelier-farfetch", "label": "Also at Farfetch" }
+      ]
+    },
+    {
+      "slug": "flattered",
+      "name": "Flattered",
+      "country": "sweden",
+      "origin": "Sweden · Since 2013",
+      "priceRange": "$180 – $350",
+      "tier": "Tier 1 — Anchor Brand",
+      "tagline": "The wearability experts.",
+      "image": "/block-hero.png",
+      "imageAlt": "Flattered white block heel mule",
+      "hub": "/brands/flattered",
+      "body": [
+        "Flattered was born from a simple question: why should comfort and beauty be in conflict? The Stockholm-based label focuses on anatomically supportive shapes — rounder toes, lower stacked heels, supple leather — that allow you to wear them all day without apology.",
+        "Their palette runs deliberately neutral: natural leathers, whites, blacks, and the occasional considered colour. Flattered has quietly become the working wardrobe heel — the one you wear to the gallery opening and keep on through dinner."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Ankle boots, mules, everyday block heels" },
+        { "label": "Materials", "value": "Full-grain leather, nubuck, suede" },
+        { "label": "Sizing", "value": "EU 35–42, runs narrow" },
+        { "label": "Ships from", "value": "Sweden, worldwide" }
+      ],
+      "ctas": [
+        { "slug": "flattered", "label": "Shop Flattered", "primary": true },
+        { "slug": "flattered-nordstrom", "label": "Also at Nordstrom" }
+      ]
+    },
+    {
+      "slug": "vagabond",
+      "name": "Vagabond Shoemakers",
+      "country": "sweden",
+      "origin": "Sweden · Since 1973",
+      "priceRange": "$100 – $200",
+      "tier": "Tier 1 — Volume Brand",
+      "tagline": "The democratic option.",
+      "image": "/craft-detail.png",
+      "imageAlt": "Vagabond heel detail craftsmanship",
+      "hub": "/brands/vagabond",
+      "body": [
+        "Half a century of Swedish shoe-making gives Vagabond a confidence that newer brands have to earn. At the accessible end of the Scandinavian heel spectrum, Vagabond offers the same clean lines and considered design language at a price that doesn't require financial planning.",
+        "Their heeled offerings span from utilitarian block-heel ankle boots to genuinely refined pointed-toe pumps. The construction has improved markedly in recent years — an ideal entry point into Scandinavian heel design."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Entry point, ankle boots, everyday pumps" },
+        { "label": "Materials", "value": "Leather, microfibre, synthetic blends" },
+        { "label": "Sizing", "value": "EU 35–43, wide fit available" },
+        { "label": "Ships from", "value": "Global distribution" }
+      ],
+      "ctas": [
+        { "slug": "vagabond", "label": "Shop Vagabond", "primary": true },
+        { "slug": "vagabond-nordstrom", "label": "Also at Nordstrom" },
+        { "slug": "vagabond-asos", "label": "Also at ASOS" }
+      ]
+    },
+    {
+      "slug": "roccamore",
+      "name": "Roccamore",
+      "country": "denmark",
+      "origin": "Denmark · Since 2015",
+      "priceRange": "$200 – $350",
+      "tier": "Tier 1 — Anchor Brand",
+      "tagline": "The biomechanics brand.",
+      "image": "/collection-flatlay.png",
+      "imageAlt": "Roccamore ergonomic heel collection",
+      "hub": "/reviews/roccamore-review",
+      "hubLabel": "Read our review →",
+      "body": [
+        "Roccamore's insole was developed with an orthopaedic shoemaker in Copenhagen, designed to keep the foot as close to anatomically correct as possible inside a heel. It is engineering as the entire design brief, not as an afterthought.",
+        "The result looks like any other beautifully designed Danish heel. It wears like something built to keep you comfortable through a very long day — a remarkable trick, consistently delivered."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "All-day wear, standing events, weddings" },
+        { "label": "Technology", "value": "Orthopaedic insole, arch support" },
+        { "label": "Sizing", "value": "EU 35–43, true to size" },
+        { "label": "Ships from", "value": "Denmark, worldwide" }
+      ],
+      "ctas": [{ "slug": "roccamore", "label": "Shop Roccamore", "primary": true }]
+    },
+    {
+      "slug": "aeyde",
+      "name": "Aeyde",
+      "country": "germany",
+      "origin": "Germany (Berlin) · Since 2015",
+      "priceRange": "$250 – $450",
+      "tier": "Tier 1 — Nordic-Adjacent",
+      "tagline": "The Berlin precision argument.",
+      "image": "/craft-detail.png",
+      "imageAlt": "Aeyde precision heel craftsmanship",
+      "body": [
+        "Technically German, spiritually Scandinavian — Aeyde's Berlin design language shares the same obsessions as its Nordic peers: clean lines, exceptional leather, and shapes that read as permanent rather than seasonal. Founded by Luisa Dames and Constantin Langholz-Baikousis, the brand is handmade in Italy.",
+        "Where Aeyde distinguishes itself is in the pointed category — slingbacks, kitten heels and stilettos with a refinement that earns the positioning. Direct-to-consumer first, and also stocked at NET-A-PORTER and Farfetch."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Pointed heels, slingbacks, precision styling" },
+        { "label": "Materials", "value": "Italian calf leather, suede, nappa" },
+        { "label": "Sizing", "value": "EU 35–41" },
+        { "label": "Ships from", "value": "Europe, worldwide" }
+      ],
+      "ctas": [
+        { "slug": "aeyde", "label": "Shop Aeyde", "primary": true },
+        { "slug": "aeyde-farfetch", "label": "Also at Farfetch" },
+        { "slug": "aeyde-net-a-porter", "label": "Also at NET-A-PORTER" }
+      ]
+    },
+    {
+      "slug": "anonymous-copenhagen",
+      "name": "Anonymous Copenhagen",
+      "country": "denmark",
+      "origin": "Denmark · Since 2016",
+      "priceRange": "$150 – $300",
+      "tier": "Tier 1 — Anchor Brand",
+      "tagline": "The editorial minimalists.",
+      "image": "/block-hero.png",
+      "imageAlt": "Anonymous Copenhagen heel design",
+      "body": [
+        "Anonymous Copenhagen earned its name by doing the opposite of what the name implies — every piece is immediately recognisable. The Copenhagen label's heels have a particular architectural quality: volume where you expect restraint, restraint where you expect decoration.",
+        "Their heeled boots and shoes are a fixture of Copenhagen Fashion Week street style. Buy for a shape you want now rather than as a decade-long proposition — and note that the last runs narrow."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Statement boots, editorial styling" },
+        { "label": "Materials", "value": "Fine leather, suede, structured materials" },
+        { "label": "Sizing", "value": "EU 36–41, runs small and narrow" },
+        { "label": "Ships from", "value": "Denmark, worldwide" }
+      ],
+      "ctas": [
+        { "slug": "anonymous-copenhagen", "label": "Shop Anonymous Copenhagen", "primary": true },
+        { "slug": "anonymous-copenhagen-nordstrom", "label": "Also at Nordstrom" }
+      ]
+    },
+    {
+      "slug": "sania-dmina",
+      "name": "Sania d'Mina",
+      "country": "sweden",
+      "origin": "Sweden · Independent",
+      "priceRange": "$300 – $600",
+      "tier": "Tier 1 — Luxury Anchor",
+      "tagline": "The Swedish luxury case.",
+      "image": "/editorial-1.png",
+      "imageAlt": "Sania d'Mina luxury heel editorial",
+      "body": [
+        "Sania d'Mina represents the quieter end of Swedish luxury — the label you discover through someone with impeccable taste, not through a campaign. A fashion-editorial sensibility runs through every design: considered proportions, exceptional last shapes, and materials that earn their price.",
+        "If ATP Atelier is the craft argument and Flattered is the practical argument, Sania d'Mina is the beauty argument. It also happens to build on an unusually wide last, which makes it one of very few genuinely elegant options for wider feet."
+      ],
+      "specs": [
+        { "label": "Best for", "value": "Statement pieces, occasions, wider feet" },
+        { "label": "Materials", "value": "Premium leather, fine suede" },
+        { "label": "Sizing", "value": "EU 35–42, wide last" },
+        { "label": "Ships from", "value": "Sweden, select global" }
+      ],
+      "ctas": [{ "slug": "sania-dmina", "label": "Shop Sania d'Mina", "primary": true }]
+    }
+  ],
+
+  "retailers": [
+    {
+      "name": "COS",
+      "slug": "cos",
+      "desc": "H&M Group's elevated label. Architectural shapes, muted palettes, and heel designs that are surprisingly considered for the price. The kitten heels and block mules consistently over-deliver."
+    },
+    {
+      "name": "ARKET",
+      "slug": "arket",
+      "desc": "H&M Group's most considered concept. ARKET heels are designed with longevity in mind — fewer styles, better materials, a slower approach to footwear that rewards patience."
+    },
+    {
+      "name": "& Other Stories",
+      "slug": "other-stories",
+      "desc": "The fashion-forward H&M Group label. Trend-aware but anchored in Scandinavian restraint. The seasonal heel drops are worth watching — quality has improved consistently since 2020."
+    }
+  ]
+}

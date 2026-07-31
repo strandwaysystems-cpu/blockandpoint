@@ -1,0 +1,153 @@
+---
+// Brand directory — migrated from the original /collections page.
+//
+// Same design, three substantive changes: brand copy now comes from
+// src/data/brands.json instead of being hardcoded seven times over; every
+// outbound link routes through /go/{slug} so monetisation is a one-file edit;
+// and the links carry rel="sponsored" rather than the old cosmetic
+// `utm_medium=affiliate` tags, which paid nothing and tracked nothing.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import data from '../../data/brands.json';
+import site from '../../data/site_architecture.json';
+import { go } from '../../lib/links.js';
+
+const { brands, retailers } = data;
+const countries = [...new Set(brands.map((b) => b.country))];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Scandinavian heel brands',
+    description: 'The Nordic and Nordic-adjacent heel brands tracked by Block & Point.',
+    itemListElement: brands.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Brand',
+        name: b.name,
+        description: b.tagline,
+        ...(b.hub ? { url: new URL(b.hub, site.base_url).href } : {}),
+      },
+    })),
+  },
+];
+---
+<BaseLayout
+  title="Brand Directory — Block & Point"
+  description="Seven Scandinavian heel brands worth knowing. ATP Atelier, Flattered, Vagabond, Roccamore, Anonymous Copenhagen, Aeyde and Sania d'Mina — with honest notes on sizing, price and who each one suits."
+  activeNav="brands"
+  pageType="hub"
+  jsonLd={jsonLd}
+>
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-hero-content reveal">
+        <span class="section-label">Brand Directory</span>
+        <h1 class="page-hero-title">Seven Brands.<br /><em>One Nordic Standard.</em></h1>
+        <p class="page-hero-subtitle">
+          These are the Scandinavian and Nordic-adjacent heel makers we return to — for the
+          materials, the last, and the lack of compromise.
+        </p>
+      </div>
+    </div>
+    <div class="page-hero-image-strip">
+      <img src="/collection-flatlay.png" alt="Collection of Scandinavian heels" class="page-hero-strip-image" loading="eager" />
+    </div>
+  </section>
+
+  <div class="filter-bar sticky-filter" id="filter-bar">
+    <div class="container">
+      <div class="filter-inner">
+        <button class="filter-btn filter-btn--active" data-filter="all">All Brands</button>
+        {countries.map((c) => (
+          <button class="filter-btn" data-filter={c}>{c[0].toUpperCase() + c.slice(1)}</button>
+        ))}
+        <span class="filter-count" id="filter-count">{brands.length} brands</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="brand-listings section-pad">
+    <div class="container">
+      <p class="inline-disclosure">
+        Block &amp; Point is reader-funded. Some links below are affiliate links — if you buy
+        through them we may earn a commission at no extra cost to you.
+        <a href="/affiliate-disclosure"> Full disclosure ›</a>
+      </p>
+
+      {brands.map((brand, i) => (
+        <>
+          <article
+            class={`brand-profile reveal${i % 2 === 1 ? ' brand-profile--reverse' : ''}`}
+            id={brand.slug}
+            data-country={brand.country}
+          >
+            <div class="brand-profile-image-col">
+              <div class="brand-profile-image-wrap">
+                <img src={brand.image} alt={brand.imageAlt} class="brand-profile-image" loading="lazy" />
+              </div>
+              <div class="brand-profile-badge">
+                <span class="brand-tier">{brand.tier}</span>
+              </div>
+            </div>
+            <div class="brand-profile-content">
+              <div class="brand-profile-header">
+                <div class="brand-profile-meta">
+                  <span class="brand-country">{brand.origin}</span>
+                  <span class="brand-range">{brand.priceRange}</span>
+                </div>
+                <h2 class="brand-profile-name">{brand.name}</h2>
+                <p class="brand-profile-tagline"><em>{brand.tagline}</em></p>
+              </div>
+              {brand.body.map((p) => <p class="brand-profile-desc">{p}</p>)}
+              <div class="brand-profile-specs">
+                {brand.specs.map((s) => (
+                  <div class="spec-item">
+                    <span class="spec-label">{s.label}</span>
+                    <span class="spec-value">{s.value}</span>
+                  </div>
+                ))}
+              </div>
+              <div class="brand-profile-actions">
+                {brand.ctas.map((cta) => (
+                  <a
+                    href={go(cta.slug)}
+                    class={`btn ${cta.primary ? 'btn--primary' : 'btn--ghost'}`}
+                    rel="sponsored nofollow"
+                  >{cta.label}</a>
+                ))}
+                {brand.hub && (
+                  <a href={brand.hub} class="btn btn--ghost">{brand.hubLabel ?? 'Brand guide →'}</a>
+                )}
+              </div>
+            </div>
+          </article>
+          {i < brands.length - 1 && <div class="brand-divider"></div>}
+        </>
+      ))}
+    </div>
+  </section>
+
+  <section class="retailer-strip section-pad">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Also Worth Knowing</span>
+        <h2 class="section-title">Scandi-Adjacent Retailers</h2>
+        <p class="section-subtitle">
+          COS, ARKET and &amp; Other Stories carry the same Nordic sensibility at accessible
+          prices — good first heels and sensible wardrobe building.
+        </p>
+      </div>
+      <div class="retailer-grid">
+        {retailers.map((r, i) => (
+          <div class="retailer-card reveal" data-delay={i * 100}>
+            <h3 class="retailer-name">{r.name}</h3>
+            <p class="retailer-desc">{r.desc}</p>
+            <a href={go(r.slug)} class="btn btn--text" rel="sponsored nofollow">Shop {r.name} →</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

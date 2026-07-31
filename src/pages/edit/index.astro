@@ -1,0 +1,68 @@
+---
+// The Edit — silo index for the money pages (commercial_listicle + _versus).
+// Cards are generated from the frontmatter of the markdown in this folder, so
+// adding a page here puts it in this listing automatically.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import site from '../../data/site_architecture.json';
+
+const pages = await Astro.glob('./*.md');
+const items = pages
+  .map((p) => ({
+    url: p.url,
+    ...p.frontmatter,
+    typeLabel: site.page_types[p.frontmatter.pageType]?.eyebrow ?? 'Guide',
+  }))
+  // Roundups before head-to-heads, then newest first within each group.
+  .sort((a, b) => {
+    if (a.pageType !== b.pageType) return a.pageType === 'commercial_listicle' ? -1 : 1;
+    return (b.updated ?? '').localeCompare(a.updated ?? '');
+  });
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'The Edit — Block & Point buying guides',
+    itemListElement: items.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: it.title,
+      url: new URL(it.url, site.base_url).href,
+    })),
+  },
+];
+---
+<BaseLayout
+  title="The Edit — Block & Point"
+  description="Ranked buying guides and head-to-head comparisons for Scandinavian heels. Honest, research-led, and updated — no SEO filler."
+  activeNav="edit"
+  pageType="commercial_listicle"
+  jsonLd={jsonLd}
+>
+  <section class="page-hero page-hero--editorial">
+    <div class="container">
+      <div class="page-hero-content reveal">
+        <span class="section-label">The Edit</span>
+        <h1 class="page-hero-title">Words About<br /><em>Heels Worth Having.</em></h1>
+        <p class="page-hero-subtitle">
+          Brand comparisons and buying guides for Scandinavian footwear — with the unflattering
+          parts left in.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="silo-grid">
+        {items.map((it) => (
+          <article class="silo-card reveal">
+            <span class="silo-card__type">{it.typeLabel}</span>
+            <h2 class="silo-card__title"><a href={it.url}>{it.title}</a></h2>
+            <p class="silo-card__desc">{it.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,13 +1,22 @@
 {
   "name": "blockandpoint",
-  "version": "1.0.0",
   "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Block & Point — Scandinavian heel edit, affiliate content engine",
   "scripts": {
     "dev": "astro dev",
+    "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "astro": "astro",
+    "check:links": "node scripts/check-affiliate-links.mjs"
   },
   "dependencies": {
+    "@astrojs/sitemap": "~3.2.1",
     "astro": "^4.16.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

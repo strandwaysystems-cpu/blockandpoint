@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Affiliate interstitials — these redirect straight out to a retailer and hold
+# no content worth indexing.
+Disallow: /go/
+
+Sitemap: https://blockandpoint.com/sitemap-index.xml

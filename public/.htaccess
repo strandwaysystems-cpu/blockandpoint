@@ -1,0 +1,36 @@
+# Apache / Hostinger configuration.
+#
+# Astro is configured with build.format: 'file', which emits /edit/foo.html.
+# Cloudflare Pages serves those extensionless automatically; Apache does not, so
+# this file does two jobs: rewrite extensionless URLs to their .html file, and
+# mirror the 301s in public/_redirects so the site behaves identically on
+# either host.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- 301s for URLs that moved during the page-type conversion -------------
+  RewriteRule ^blog/?$                    /edit [R=301,L]
+  RewriteRule ^blog\.html$                /edit [R=301,L]
+  RewriteRule ^collections/?$             /brands [R=301,L]
+  RewriteRule ^collections\.html$         /brands [R=301,L]
+  RewriteRule ^atp-atelier-vs-flattered/?$      /edit/atp-atelier-vs-flattered [R=301,L]
+  RewriteRule ^atp-atelier-vs-flattered\.html$  /edit/atp-atelier-vs-flattered [R=301,L]
+  RewriteRule ^sitemap\.xml$              /sitemap-index.xml [R=301,L]
+
+  # --- Canonical form: strip a trailing slash (except the root) -------------
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # --- Serve /path from /path.html without exposing the extension ----------
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^(.+)$ /$1.html [L]
+
+  # --- A request for /path.html redirects to /path, so one URL is canonical -
+  RewriteCond %{THE_REQUEST} \s/(.+)\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L]
+</IfModule>
+
+ErrorDocument 404 /404.html
