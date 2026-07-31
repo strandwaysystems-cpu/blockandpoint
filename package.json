@@ -17,7 +17,11 @@
     "@astrojs/sitemap": "~3.2.1",
     "astro": "^4.16.0"
   },
+  "_overrides_note": "Astro → Vite → Rollup 4, which ships a NATIVE binary (@rollup/rollup-linux-x64-gnu) compiled against GLIBC 2.29+. Hostinger's build image has an older glibc, so that binary cannot load and the build dies with 'GLIBC_2.29 not found'. Node version is irrelevant here — glibc belongs to the OS, not to Node, so the same binary fails on 18 and 20 alike. @rollup/wasm-node is Rollup's own WebAssembly build: same API, no native code, no libc requirement. Slower, which is meaningless for a 40-page static site. Remove the override only if the host's glibc is confirmed >= 2.29. See docs/DEPLOYMENT.md.",
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node@^4"
+  },
   "engines": {
-    "node": ">=20"
+    "node": ">=18.17.1"
   }
 }

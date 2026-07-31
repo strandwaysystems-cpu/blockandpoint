@@ -1,0 +1,90 @@
+# Builds the site in CI and uploads dist/ to Hostinger over FTP.
+#
+# WHY THIS EXISTS. The site compiles to plain static files, so the host does not
+# need Node, npm, or a build step at all. Building here instead removes the whole
+# class of host-image problems — including the GLIBC/Rollup native-binary failure
+# documented in docs/DEPLOYMENT.md — because Hostinger only ever receives files.
+#
+# This is a per-repo deploy workflow and deliberately separate from build.yml,
+# which is byte-identical across every Strandway repo and must never deploy.
+#
+# INERT UNTIL CONFIGURED. Without the secrets below, every step is skipped and
+# the job passes with an explanatory message, so this can sit in the repo without
+# turning CI red. Add the secrets to switch it on.
+#
+#   HOSTINGER_FTP_HOST      hPanel → Files → FTP Accounts
+#   HOSTINGER_FTP_USER
+#   HOSTINGER_FTP_PASSWORD
+#   HOSTINGER_FTP_PATH      remote target, usually /public_html/
+#
+# Once this is live, turn OFF Hostinger's own Git auto-deploy so the two do not
+# fight over the same directory.
+name: deploy-hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Secrets are not available in a job-level `if`, but they are in job-level
+    # `env`, so the guard is computed here and each step checks it.
+    env:
+      CONFIGURED: ${{ secrets.HOSTINGER_FTP_HOST != '' && secrets.HOSTINGER_FTP_USER != '' && secrets.HOSTINGER_FTP_PASSWORD != '' }}
+    steps:
+      - name: Report that deployment is not configured
+        if: env.CONFIGURED != 'true'
+        run: |
+          echo "Hostinger FTP secrets are not set - skipping deploy."
+          echo "See docs/DEPLOYMENT.md, Option B, for the four secrets to add."
+
+      - name: Checkout
+        if: env.CONFIGURED == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: env.CONFIGURED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: env.CONFIGURED == 'true'
+        run: npm ci
+
+      # postbuild runs scripts/check-affiliate-links.mjs, so a dead internal link,
+      # an unknown /go/ slug or a missing rel="sponsored" fails the deploy rather
+      # than shipping.
+      - name: Build
+        if: env.CONFIGURED == 'true'
+        run: npm run build
+
+      - name: Confirm .htaccess survived the build
+        if: env.CONFIGURED == 'true'
+        run: |
+          test -f dist/.htaccess || { echo "::error::dist/.htaccess missing - extensionless URLs and the 301s would break"; exit 1; }
+          test -f dist/robots.txt || { echo "::error::dist/robots.txt missing"; exit 1; }
+          echo "dist/ ready: $(find dist -name '*.html' | wc -l) pages"
+
+      - name: Deploy to Hostinger
+        if: env.CONFIGURED == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HOSTINGER_FTP_HOST }}
+          username: ${{ secrets.HOSTINGER_FTP_USER }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          server-dir: ${{ secrets.HOSTINGER_FTP_PATH || '/public_html/' }}
+          local-dir: ./dist/
+          # dangerous-clean-slate is deliberately NOT set: it would wipe anything
+          # already on the host that is not in dist/. The action syncs by diff.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
