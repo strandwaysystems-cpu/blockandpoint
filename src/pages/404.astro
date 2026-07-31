@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Page not found — Block & Point"
+  description="That page doesn't exist. Here's where to go instead."
+  noindex={true}
+  showNewsletter={false}
+>
+  <section class="page-hero page-hero--editorial">
+    <div class="container">
+      <div class="page-hero-content">
+        <span class="section-label">404</span>
+        <h1 class="page-hero-title">Not the pair<br /><em>you were looking for.</em></h1>
+        <p class="page-hero-subtitle">
+          This page doesn't exist — it may have moved when we reorganised the site.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container">
+      <div class="silo-grid">
+        <article class="silo-card">
+          <span class="silo-card__type">The Edit</span>
+          <h2 class="silo-card__title"><a href="/edit">Buying guides &amp; comparisons</a></h2>
+          <p class="silo-card__desc">Ranked edits of Scandinavian heels, with the unflattering parts left in.</p>
+        </article>
+        <article class="silo-card">
+          <span class="silo-card__type">Brands</span>
+          <h2 class="silo-card__title"><a href="/brands">The brand directory</a></h2>
+          <p class="silo-card__desc">Seven Nordic labels, with honest notes on sizing, price and fit.</p>
+        </article>
+        <article class="silo-card">
+          <span class="silo-card__type">Guides</span>
+          <h2 class="silo-card__title"><a href="/guides">Sizing, height &amp; care</a></h2>
+          <p class="silo-card__desc">The practical questions that decide whether a shoe actually works.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

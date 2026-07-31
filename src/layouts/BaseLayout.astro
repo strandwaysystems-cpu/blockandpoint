@@ -1,0 +1,120 @@
+---
+// The shell every page renders inside: <head>, header, footer, scripts.
+//
+// Owns the SEO plumbing so no page has to remember it — canonical, Open Graph,
+// Twitter, robots, favicons, and the JSON-LD blocks BlogLayout hands up. Also
+// wires analytics (Plausible, cookieless) and the consent manager, per
+// docs/analytics-privacy-standard.md.
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Newsletter from '../components/Newsletter.astro';
+import site from '../data/site_architecture.json';
+import '../styles/global.css';
+
+const {
+  title,
+  description = site.tagline,
+  image = `${site.base_url}/og-image.png`,
+  pageType,
+  activeNav = '',
+  noindex = false,
+  ogType = 'website',
+  jsonLd = [],
+  showNewsletter = true,
+} = Astro.props;
+
+// One clean canonical form: extensionless, no trailing slash, matching the
+// sitemap, internal links and what the host serves. Google should never have to
+// reconcile two forms of the same URL.
+const cleanPath = Astro.url.pathname
+  .replace(/\.html$/, '')
+  .replace(/index$/, '')
+  .replace(/\/$/, '');
+const canonical = cleanPath ? new URL(cleanPath, Astro.site).href : Astro.site.href;
+
+// Google Search Console — consent-independent HTML-tag verification (portfolio
+// standard §8). Paste the token from Search Console → Settings → Ownership
+// verification → HTML tag. '' renders nothing.
+const gscVerification = '';
+---
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Set the stored theme before first paint so dark mode never flashes white. -->
+  <script is:inline>
+    (function () {
+      try {
+        var t = localStorage.getItem('bp-theme');
+        if (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark';
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Privacy-friendly analytics by Plausible (cookieless — no consent gate needed) -->
+  <script defer data-domain="blockandpoint.com" src="https://plausible.io/js/script.js"></script>
+  <script is:inline>
+    window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+  </script>
+
+  {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#1A1916" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content={ogType} />
+  <meta property="og:site_name" content={site.site_name} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={image} />
+  <meta property="og:url" content={canonical} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={image} />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet"
+  />
+
+  {jsonLd.map((block) => (
+    <script type="application/ld+json" set:html={JSON.stringify(block)} />
+  ))}
+
+  <!-- Consent manager (gates Crazy Egg; loads nothing non-essential before opt-in) -->
+  <script src="/consent.js" defer></script>
+
+  <slot name="head" />
+</head>
+<body {...pageType ? { 'data-pagetype': pageType } : {}}>
+  <Header activeNav={activeNav} />
+
+  <main>
+    <slot />
+  </main>
+
+  {showNewsletter && <Newsletter />}
+  <Footer />
+
+  <!-- Universal click tracker + Block & Point presentation JS -->
+  <script src="/script.js" is:inline defer></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+---
+// Outbound affiliate link router.
+//
+// Every commercial CTA on the site points at /go/{slug} rather than a retailer
+// URL. The destination is resolved here from src/data/affiliate_links.json, so
+// when a network approves the site the tracked URL is pasted into ONE file and
+// every CTA becomes commissioned — no page edits, no missed links.
+//
+// It also owns click attribution. The shared tracker in /script.js only fires
+// on *external* links, and /go/ is same-origin, so the event is fired here
+// instead, at the moment of redirect, with partner/vertical read straight from
+// the JSON. That is stronger attribution than sniffing the hostname, and it
+// keeps public/script.js byte-identical with the rest of the portfolio (the
+// no-forking rule in docs/analytics-privacy-standard.md §2).
+import affiliates from '../../data/affiliate_links.json';
+
+export function getStaticPaths() {
+  return Object.entries(affiliates.links).map(([slug, link]) => ({
+    params: { slug },
+    props: { link },
+  }));
+}
+
+const { link } = Astro.props;
+const { slug } = Astro.params;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Interstitials must never be indexed or pass equity. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Redirecting to {link.label}…</title>
+  <link rel="canonical" href={link.url} />
+
+  <!-- Plausible must load before the redirect fires so the event is not lost. -->
+  <script async src="https://plausible.io/js/script.manual.js"></script>
+  <script is:inline>
+    window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
+  </script>
+
+  <script
+    is:inline
+    define:vars={{
+      target: link.url,
+      partner: link.partner,
+      vertical: link.vertical,
+      monetized: link.monetized,
+      slug,
+    }}
+  >
+    // Record the click, then leave. `location.replace` keeps the interstitial
+    // out of the back-button history so "back" returns to the article.
+    try {
+      window.plausible('affiliate_click', {
+        props: {
+          event_category: 'affiliate',
+          partner: partner,
+          affiliate_vertical: vertical,
+          link_slug: slug,
+          link_url: target,
+          monetized: monetized ? 'yes' : 'no',
+          referrer_path: document.referrer
+            ? (function () { try { return new URL(document.referrer).pathname; } catch (e) { return ''; } })()
+            : '',
+        },
+      });
+    } catch (e) {}
+    window.location.replace(target);
+  </script>
+
+  <!-- No-JS fallback. 0-second refresh, so it is instant either way. -->
+  <noscript><meta http-equiv="refresh" content={`0;url=${link.url}`} /></noscript>
+
+  <style>
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: #F7F4EF; color: #1A1916;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      text-align: center; padding: 2rem;
+    }
+    p { margin: 0 0 .75rem; letter-spacing: .02em; }
+    .muted { color: #7A7870; font-size: .875rem; }
+    a { color: #B89A6A; }
+  </style>
+</head>
+<body>
+  <main>
+    <p>Taking you to {link.label}…</p>
+    <p class="muted">
+      Not redirected? <a href={link.url} rel="noopener sponsored nofollow">Continue to {link.label}</a>
+    </p>
+  </main>
+</body>
+</html>

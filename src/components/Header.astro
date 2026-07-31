@@ -1,0 +1,55 @@
+---
+// Masthead. Markup is the original Block & Point header — split nav around a
+// centred wordmark — but the links come from src/data/site_architecture.json,
+// so nav changes happen in one place instead of in every page.
+import site from '../data/site_architecture.json';
+
+const left = site.global_menu.header_nav_left;
+const right = site.global_menu.header_nav_right;
+const cta = site.global_menu.header_cta;
+
+const { activeNav = '' } = Astro.props;
+const path = Astro.url.pathname.replace(/\.html$/, '');
+// A link is active when it is the explicit `activeNav` key or when the current
+// URL sits inside that silo (/edit/best-block-heels → "The Edit" is active).
+const isActive = (item) =>
+  activeNav === item.key || (item.url !== '/' && path.startsWith(item.url));
+const cls = (item) => `nav-link${isActive(item) ? ' nav-link--active' : ''}`;
+---
+<header class="site-header" id="site-header">
+  <div class="header-inner container">
+    <nav class="header-nav header-nav--left" aria-label="Primary">
+      {left.map((item) => <a href={item.url} class={cls(item)}>{item.label}</a>)}
+    </nav>
+
+    <a href="/" class="site-logo" aria-label="Block & Point Home">
+      <svg class="logo-svg" viewBox="0 0 164 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <text x="0" y="28" font-family="'Cormorant Garamond', serif" font-size="32" font-weight="400" fill="currentColor" letter-spacing="-1">B</text>
+        <text x="20" y="28" font-family="'Cormorant Garamond', serif" font-size="18" font-weight="300" fill="currentColor" opacity="0.5">&amp;</text>
+        <text x="34" y="28" font-family="'Cormorant Garamond', serif" font-size="32" font-weight="400" fill="currentColor" letter-spacing="-1">P</text>
+        <line x1="60" y1="30" x2="164" y2="30" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+        <text x="60" y="24" font-family="'DM Sans', sans-serif" font-size="7" font-weight="300" fill="currentColor" opacity="0.6" letter-spacing="2.5">BLOCK &amp; POINT</text>
+      </svg>
+    </a>
+
+    <nav class="header-nav header-nav--right" aria-label="Secondary">
+      {right.map((item) => <a href={item.url} class={cls(item)}>{item.label}</a>)}
+      <a href={cta.url} class="nav-link">{cta.label}</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+          <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" class="sun-rays"/>
+          <path d="M14 10a4 4 0 11-8 0 6 6 0 008 0z" fill="currentColor" class="moon-shape" style="display:none"/>
+        </svg>
+      </button>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    {[...left, ...right].map((item) => <a href={item.url} class="mobile-nav-link">{item.label}</a>)}
+    <a href={cta.url} class="mobile-nav-link">{cta.label}</a>
+  </div>
+</header>

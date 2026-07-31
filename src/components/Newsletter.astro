@@ -1,0 +1,56 @@
+---
+// Newsletter capture. Original Block & Point markup and styling.
+//
+// `data-endpoint` comes from site_architecture.json → newsletter.endpoint. When
+// it is null the form still renders (it is a design element on every page) but
+// public/script.js responds "Opening soon" instead of showing a subscribed
+// state for an address nothing stored. Set the endpoint to switch it live —
+// see docs/MONETIZATION.md.
+import site from '../data/site_architecture.json';
+
+const { heading, blurb, endpoint } = site.newsletter;
+---
+<section class="newsletter-section section-pad" id="newsletter">
+  <div class="container">
+    <div class="newsletter-inner reveal">
+      <div class="newsletter-header">
+        <span class="section-label">Weekly Newsletter</span>
+        <h2 class="newsletter-title">{heading}</h2>
+        <p class="newsletter-subtitle">{blurb}</p>
+      </div>
+      <form
+        class="newsletter-form"
+        id="newsletter-form"
+        novalidate
+        {...(endpoint ? { 'data-endpoint': endpoint } : {})}
+      >
+        <div class="newsletter-input-group">
+          <label class="visually-hidden" for="newsletter-email">Your email address</label>
+          <input
+            type="email"
+            class="newsletter-input"
+            id="newsletter-email"
+            name="email"
+            placeholder="Your email address"
+            required
+            autocomplete="email"
+          />
+          <button type="submit" class="btn btn--primary newsletter-submit">Subscribe</button>
+        </div>
+        <p class="newsletter-disclaimer">Weekly. Unsubscribe anytime.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

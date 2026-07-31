@@ -1,0 +1,292 @@
+---
+// The page-type engine. This is where a markdown file becomes its type:
+// eyebrow badge, accent colour, affiliate chrome, and schema.org output are all
+// switched on `pageType` frontmatter. See
+// strandway-ventures/docs/affiliate-engine/01-page-type-system.md.
+import BaseLayout from './BaseLayout.astro';
+import site from '../data/site_architecture.json';
+import { go, links } from '../lib/links.js';
+
+// Markdown passes frontmatter under Astro.props.frontmatter; .astro pages may
+// pass the same fields directly.
+const fm = Astro.props.frontmatter ?? Astro.props;
+const {
+  title,
+  description,
+  pageType = 'informational',
+  heroImage,
+  heroAlt,
+  brand,
+  updated,
+  rating,
+  faq = [],
+  toc = false,
+  related,
+  ctas,
+  nextSteps,
+} = fm;
+
+const typeDef = site.page_types[pageType] ?? site.page_types.informational;
+const eyebrow = typeDef.eyebrow;
+const isUtility = pageType === 'page';
+const isCommercial = [
+  'commercial_listicle',
+  'commercial_versus',
+  'transactional_review',
+  'transactional_hub',
+].includes(pageType);
+
+const cleanPath = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+const canonical = new URL(cleanPath, Astro.site).href;
+
+const ogImage = heroImage ? new URL(heroImage, Astro.site).href : `${site.base_url}/og-image.png`;
+
+// --- On-page table of contents (opt-in via `toc: true`) ---------------------
+// Astro assigns slug ids to markdown headings, so #slug jump links resolve with
+// no extra work. Skip the boilerplate headings the layout renders itself.
+const allHeadings = Astro.props.headings ?? [];
+const tocItems = toc
+  ? allHeadings.filter(
+      (h) => h.depth === 2 && !/frequently asked questions|sources|further reading/i.test(h.text),
+    )
+  : [];
+
+// --- "Next steps" onward navigation ----------------------------------------
+// Entry pages that dead-end bounce. Every content page gets an above-the-fold
+// module of internal picks plus commercial CTAs, keyed to its silo. Frontmatter
+// overrides: `related` (picks), `ctas` (buttons), `nextSteps: false` (hide).
+const navSection = (cleanPath.split('/')[1] || '').toLowerCase();
+const siloNav = {
+  edit: {
+    picks: [
+      { label: 'The full brand directory', url: '/brands' },
+      { label: 'Finding your heel height', url: '/guides/heel-height-guide' },
+      { label: 'Scandinavian shoe sizing', url: '/guides/scandinavian-shoe-sizing' },
+    ],
+    ctas: [
+      { label: 'Shop ATP Atelier', slug: 'atp-atelier' },
+      { label: 'Shop Flattered', slug: 'flattered' },
+      { label: 'Shop Vagabond', slug: 'vagabond' },
+    ],
+  },
+  brands: {
+    picks: [
+      { label: 'Best Scandinavian block heels', url: '/edit/best-scandinavian-block-heels' },
+      { label: 'ATP Atelier vs Flattered', url: '/edit/atp-atelier-vs-flattered' },
+      { label: 'Most comfortable designer heels', url: '/edit/most-comfortable-designer-heels' },
+    ],
+    ctas: [
+      { label: 'Shop ATP Atelier', slug: 'atp-atelier' },
+      { label: 'Shop Flattered', slug: 'flattered' },
+    ],
+  },
+  reviews: {
+    picks: [
+      { label: 'Best Scandinavian block heels', url: '/edit/best-scandinavian-block-heels' },
+      { label: 'The full brand directory', url: '/brands' },
+      { label: 'Making leather heels last', url: '/guides/leather-heel-care' },
+    ],
+    ctas: [
+      { label: 'Shop Flattered', slug: 'flattered' },
+      { label: 'Shop ATP Atelier', slug: 'atp-atelier' },
+    ],
+  },
+  guides: {
+    picks: [
+      { label: 'Best Scandinavian block heels', url: '/edit/best-scandinavian-block-heels' },
+      { label: 'Best heels for wide feet', url: '/edit/best-scandinavian-heels-wide-feet' },
+      { label: 'The full brand directory', url: '/brands' },
+    ],
+    ctas: [
+      { label: 'Shop Vagabond', slug: 'vagabond' },
+      { label: 'Shop Flattered', slug: 'flattered' },
+    ],
+  },
+};
+const navDefaults = siloNav[navSection] ?? siloNav.guides;
+// Never link a page to itself; keep the module compact.
+const navPicks = (related ?? navDefaults.picks).filter((p) => p.url !== cleanPath).slice(0, 4);
+const navCtas = (ctas ?? navDefaults.ctas).map((c) => ({
+  label: c.label,
+  url: c.slug ? go(c.slug) : c.url,
+}));
+const showNextSteps = nextSteps !== false && !isUtility && (navPicks.length > 0 || navCtas.length > 0);
+
+// --- Schema.org, keyed by pageType -----------------------------------------
+const jsonLd = [];
+const org = { '@type': 'Organization', name: site.site_name, url: site.base_url };
+
+jsonLd.push({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site.base_url },
+    ...(eyebrow ? [{ '@type': 'ListItem', position: 2, name: eyebrow, item: canonical }] : []),
+    { '@type': 'ListItem', position: eyebrow ? 3 : 2, name: title, item: canonical },
+  ],
+});
+
+const schemaImage = heroImage
+  ? { image: { '@type': 'ImageObject', url: ogImage, caption: heroAlt ?? title, width: 1200, height: 640 } }
+  : {};
+
+if (pageType === 'transactional_review') {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    name: title,
+    author: org,
+    publisher: org,
+    ...schemaImage,
+    itemReviewed: { '@type': 'Product', name: brand ?? title, ...(brand ? { brand: { '@type': 'Brand', name: brand } } : {}) },
+    ...(rating ? { reviewRating: { '@type': 'Rating', ratingValue: rating, bestRating: 5 } } : {}),
+  });
+} else if (pageType === 'hub') {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'Brand',
+    name: brand ?? title,
+    description,
+    url: canonical,
+    ...schemaImage,
+  });
+} else if (isUtility) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+    publisher: org,
+    ...schemaImage,
+  });
+} else {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    url: canonical,
+    author: org,
+    publisher: org,
+    ...schemaImage,
+    ...(updated ? { dateModified: updated } : {}),
+  });
+}
+
+if (faq.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((q) => ({
+      '@type': 'Question',
+      name: q.q,
+      acceptedAnswer: { '@type': 'Answer', text: q.a },
+    })),
+  });
+}
+
+const activeNav = { edit: 'edit', brands: 'brands', reviews: 'reviews', guides: 'guides' }[navSection] ?? '';
+---
+<BaseLayout
+  title={`${title} — ${site.site_name}`}
+  description={description}
+  image={ogImage}
+  pageType={pageType}
+  activeNav={activeNav}
+  ogType={pageType === 'hub' ? 'website' : 'article'}
+  jsonLd={jsonLd}
+>
+  <article class="page">
+    <div class="article-shell">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span>›</span> <span class="crumb-type">{eyebrow ?? title}</span>
+      </nav>
+
+      <header class="article-head">
+        {eyebrow && (
+          <p class={`eyebrow eyebrow--${pageType}`}>{eyebrow}{brand ? ` · ${brand}` : ''}</p>
+        )}
+        <h1>{title}</h1>
+        {description && <p class="dek">{description}</p>}
+        {updated && <p class="byline">Updated {updated} · Independent, reader-funded</p>}
+      </header>
+
+      {heroImage && (
+        <figure class="article-hero">
+          <img src={heroImage} alt={heroAlt ?? title} width="1200" height="640" loading="eager" />
+        </figure>
+      )}
+
+      {showNextSteps && (
+        <aside class="next-steps" aria-label="Where to go next">
+          {navPicks.length > 0 && (
+            <div class="next-steps__col">
+              <p class="next-steps__label">Read next</p>
+              <ul class="next-steps__picks">
+                {navPicks.map((p) => <li><a href={p.url}>{p.label}</a></li>)}
+              </ul>
+            </div>
+          )}
+          {navCtas.length > 0 && (
+            <div class="next-steps__col next-steps__col--cta">
+              <p class="next-steps__label">Shop the brands</p>
+              <div class="next-steps__ctas">
+                {navCtas.map((c) => (
+                  <a class="next-steps__btn" href={c.url} rel="sponsored nofollow">{c.label}</a>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+      )}
+
+      {isCommercial && (
+        <p class="inline-disclosure">
+          Some links below are affiliate links. If you buy through them we may earn a commission at
+          no extra cost to you — it never changes what we recommend or how we rank it.
+          <a href="/affiliate-disclosure"> Full disclosure ›</a>
+        </p>
+      )}
+
+      {tocItems.length >= 4 && (
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__label">On this page</p>
+          <ul class="toc__list">
+            {tocItems.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ul>
+        </nav>
+      )}
+
+      <div class="article-body">
+        <slot />
+      </div>
+
+      {faq.length > 0 && (
+        <section class="faq-block">
+          <h2>Frequently Asked Questions</h2>
+          {faq.map((q) => (
+            <details>
+              <summary>{q.q}</summary>
+              <p>{q.a}</p>
+            </details>
+          ))}
+        </section>
+      )}
+    </div>
+  </article>
+
+  <script is:inline>
+    // Upgrade markdown links whose text starts with 👉 into CTA buttons. This is
+    // how content authors mark a call to action in plain markdown — no
+    // components needed. Purely presentational: the link works without JS, and
+    // rel="sponsored" is already stamped into the HTML at build time by
+    // src/lib/rehype-affiliate-rel.mjs, so crawlers never depend on this.
+    document.querySelectorAll('.article-body a').forEach(function (a) {
+      var txt = (a.textContent || '').trim();
+      if (txt.indexOf('👉') !== 0) return;
+      a.classList.add('cta-btn');
+      a.textContent = txt.replace(/^👉\s*/, '');
+    });
+  </script>
+</BaseLayout>

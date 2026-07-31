@@ -1,244 +1,222 @@
 ---
-import Base from '../layouts/Base.astro';
+// Homepage. Original Block & Point design, with three fixes: every dead link
+// (blog.html?filter=..., collections.html#..., six cards all pointing at /blog)
+// now goes to a real page; the brand cards are generated from brands.json; and
+// the editorial preview is generated from the actual money pages rather than
+// hand-written stubs, so it can never drift out of date again.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import brandData from '../data/brands.json';
+import site from '../data/site_architecture.json';
+
+// Featured brands: the three anchors, in directory order.
+const featured = ['atp-atelier', 'flattered', 'roccamore']
+  .map((slug) => brandData.brands.find((b) => b.slug === slug))
+  .filter(Boolean);
+
+const editPages = await Astro.glob('./edit/*.md');
+const edits = editPages
+  .map((p) => ({ url: p.url, ...p.frontmatter }))
+  .sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''));
+const [featureEdit, ...restEdits] = [
+  edits.find((e) => e.url.includes('atp-atelier-vs-flattered')) ?? edits[0],
+  ...edits.filter((e) => !e.url.includes('atp-atelier-vs-flattered')),
+];
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: site.site_name,
+    url: site.base_url,
+    description: site.tagline,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: site.site_name,
+    url: site.base_url,
+    description: 'An independent, research-led edit of Scandinavian heel design.',
+  },
+];
 ---
-<Base title="Block & Point — Scandinavian Heel Edit" description="A curated edit of Scandinavian heel design. Block heels, pointed pumps, and everything between — sourced from the Nordic brands worth knowing." activeNav="">
-<!-- ═══════════════════════════════════════════ HERO -->
-    <section class="hero" aria-label="Hero">
-      <div class="hero-media">
-        <img src="/hero.png" alt="Black stiletto heels flat lay on pale marble" class="hero-image" loading="eager" />
-        <div class="hero-overlay"></div>
-      </div>
-      <div class="hero-content container">
-        <div class="hero-text">
-          <p class="hero-eyebrow reveal">Scandinavian Heel Edit</p>
-          <h1 class="hero-heading reveal">Two shapes.<br /><em>Infinite expression.</em></h1>
-          <p class="hero-subtext reveal">A curated guide to Nordic heel design — from understated block-heeled mules to precision-crafted pointed stilettos.</p>
-          <div class="hero-actions reveal">
-            <a href="/collections" class="btn btn--primary">Explore Brands</a>
-            <a href="/blog" class="btn btn--ghost">Read The Edit</a>
-          </div>
+<BaseLayout
+  title="Block & Point — Scandinavian Heel Edit"
+  description="An independent edit of Scandinavian heel design. Block heels, pointed pumps, and honest buying guides to the Nordic brands worth knowing."
+  jsonLd={jsonLd}
+>
+  <!-- HERO -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-media">
+      <img src="/hero.png" alt="Black stiletto heels flat lay on pale marble" class="hero-image" loading="eager" />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content container">
+      <div class="hero-text">
+        <p class="hero-eyebrow reveal">Scandinavian Heel Edit</p>
+        <h1 class="hero-heading reveal">Two shapes.<br /><em>Infinite expression.</em></h1>
+        <p class="hero-subtext reveal">
+          A curated guide to Nordic heel design — from understated block-heeled mules to
+          precision-crafted pointed stilettos.
+        </p>
+        <div class="hero-actions reveal">
+          <a href="/edit/best-scandinavian-block-heels" class="btn btn--primary">The Block Heel Edit</a>
+          <a href="/brands" class="btn btn--ghost">Explore Brands</a>
         </div>
-        <div class="hero-scroll-indicator" aria-hidden="true">
-          <span class="scroll-line"></span>
-          <span class="scroll-label">Scroll</span>
-        </div>
       </div>
-    </section>
+      <div class="hero-scroll-indicator" aria-hidden="true">
+        <span class="scroll-line"></span>
+        <span class="scroll-label">Scroll</span>
+      </div>
+    </div>
+  </section>
 
-    <!-- ═══════════════════════════════════════════ PHILOSOPHY STRIP -->
-    <section class="philosophy-strip">
-      <div class="container">
-        <div class="philosophy-inner">
-          <div class="philosophy-rule"></div>
-          <p class="philosophy-text reveal">
-            In Scandinavian design, a heel is never a performance — it is a decision. Considered, precise, and entirely your own.
+  <!-- PHILOSOPHY -->
+  <section class="philosophy-strip">
+    <div class="container">
+      <div class="philosophy-inner">
+        <div class="philosophy-rule"></div>
+        <p class="philosophy-text reveal">
+          In Scandinavian design, a heel is never a performance — it is a decision. Considered,
+          precise, and entirely your own.
+        </p>
+        <div class="philosophy-rule"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND PREVIEW -->
+  <section class="brand-preview section-pad" id="brands">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Nordic Brands</span>
+        <h2 class="section-title">The Houses Worth Knowing</h2>
+        <p class="section-subtitle">
+          Seven Scandinavian labels — each obsessed with the space between comfort and beauty.
+        </p>
+      </div>
+
+      <div class="brand-grid">
+        {featured.map((brand, i) => (
+          <article class="brand-card reveal" data-delay={i * 100}>
+            <div class="brand-card-image-wrap">
+              <img src={brand.image} alt={brand.imageAlt} class="brand-card-image" loading="lazy" />
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-card-meta">
+                <span class="brand-origin">{brand.origin.split(' · ')[0]}</span>
+                <span class="brand-price">{brand.priceRange}</span>
+              </div>
+              <h3 class="brand-name">{brand.name}</h3>
+              <p class="brand-desc">{brand.body[0]}</p>
+              <a href={brand.hub ?? `/brands#${brand.slug}`} class="brand-link">View brand →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="section-cta reveal">
+        <a href="/brands" class="btn btn--outline">See All Seven Brands</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK vs POINT -->
+  <section class="split-feature section-pad">
+    <div class="split-feature-inner">
+      <div class="split-panel split-panel--block reveal-left">
+        <div class="split-panel-image-wrap">
+          <img src="/block-hero.png" alt="White block heel mule with botanical styling" class="split-panel-image" loading="lazy" />
+        </div>
+        <div class="split-panel-content">
+          <span class="split-label">Block</span>
+          <h2 class="split-heading">Grounded<br /><em>confidence.</em></h2>
+          <p class="split-text">
+            The block heel: architecture you can walk in. Mules, sandals and ankle boots where
+            stability is a design feature, not a compromise.
           </p>
-          <div class="philosophy-rule"></div>
+          <a href="/edit/best-scandinavian-block-heels" class="btn btn--text">Explore block heels →</a>
         </div>
       </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════ BRAND GRID PREVIEW -->
-    <section class="brand-preview section-pad" id="brands">
-      <div class="container">
-        <div class="section-header reveal">
-          <span class="section-label">Nordic Brands</span>
-          <h2 class="section-title">The Houses Worth Knowing</h2>
-          <p class="section-subtitle">Seven Scandinavian labels — each obsessed with the space between comfort and beauty.</p>
+      <div class="split-panel split-panel--point reveal-right">
+        <div class="split-panel-image-wrap">
+          <img src="/craft-detail.png" alt="Precision stiletto heel tip on marble" class="split-panel-image" loading="lazy" />
         </div>
-
-        <div class="brand-grid">
-
-          <article class="brand-card reveal" data-delay="0">
-            <div class="brand-card-image-wrap">
-              <img src="/editorial-1.png" alt="ATP Atelier heel editorial" class="brand-card-image" loading="lazy" />
-            </div>
-            <div class="brand-card-body">
-              <div class="brand-card-meta">
-                <span class="brand-origin">Sweden</span>
-                <span class="brand-price">$250 – $450</span>
-              </div>
-              <h3 class="brand-name">ATP Atelier</h3>
-              <p class="brand-desc">The Swedish leather studio that made artisan craft aspirational. Every pair is a graduate school thesis in lasting materials.</p>
-              <a href="collections.html#atp-atelier" class="brand-link">View brand →</a>
-            </div>
-          </article>
-
-          <article class="brand-card reveal" data-delay="100">
-            <div class="brand-card-image-wrap">
-              <img src="/block-hero.png" alt="Flattered mule block heel" class="brand-card-image" loading="lazy" />
-            </div>
-            <div class="brand-card-body">
-              <div class="brand-card-meta">
-                <span class="brand-origin">Sweden</span>
-                <span class="brand-price">$180 – $350</span>
-              </div>
-              <h3 class="brand-name">Flattered</h3>
-              <p class="brand-desc">Stockholm's answer to the question of whether heels can be both beautiful and liveable. Spoiler: they can.</p>
-              <a href="collections.html#flattered" class="brand-link">View brand →</a>
-            </div>
-          </article>
-
-          <article class="brand-card reveal" data-delay="200">
-            <div class="brand-card-image-wrap">
-              <img src="/collection-flatlay.png" alt="Collection of Scandinavian heels on linen" class="brand-card-image" loading="lazy" />
-            </div>
-            <div class="brand-card-body">
-              <div class="brand-card-meta">
-                <span class="brand-origin">Denmark</span>
-                <span class="brand-price">$200 – $350</span>
-              </div>
-              <h3 class="brand-name">Roccamore</h3>
-              <p class="brand-desc">Copenhagen's ergonomic-forward heel brand. Biomechanical research meets architectural design — a genuinely rare combination.</p>
-              <a href="collections.html#roccamore" class="brand-link">View brand →</a>
-            </div>
-          </article>
-
-        </div>
-
-        <div class="section-cta reveal">
-          <a href="/collections" class="btn btn--outline">See All Seven Brands</a>
+        <div class="split-panel-content">
+          <span class="split-label">Point</span>
+          <h2 class="split-heading">Precise<br /><em>intention.</em></h2>
+          <p class="split-text">
+            The pointed heel: geometry as statement. Slingbacks, kitten heels and stilettos for
+            people who dress with conviction.
+          </p>
+          <a href="/guides/heel-height-guide" class="btn btn--text">Find your heel height →</a>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ═══════════════════════════════════════════ SPLIT FEATURE: BLOCK vs POINT -->
-    <section class="split-feature section-pad">
-      <div class="split-feature-inner">
-        <div class="split-panel split-panel--block reveal-left">
-          <div class="split-panel-image-wrap">
-            <img src="/block-hero.png" alt="White block heel mule with botanical styling" class="split-panel-image" loading="lazy" />
-          </div>
-          <div class="split-panel-content">
-            <span class="split-label">Block</span>
-            <h2 class="split-heading">Grounded<br /><em>confidence.</em></h2>
-            <p class="split-text">The block heel: architecture you can walk in. Mules, sandals, and ankle boots where stability is a design feature, not a compromise.</p>
-            <a href="blog.html?filter=block" class="btn btn--text">Explore block heels →</a>
-          </div>
-        </div>
-        <div class="split-panel split-panel--point reveal-right">
-          <div class="split-panel-image-wrap">
-            <img src="/craft-detail.png" alt="Precision stiletto heel tip on marble" class="split-panel-image" loading="lazy" />
-          </div>
-          <div class="split-panel-content">
-            <span class="split-label">Point</span>
-            <h2 class="split-heading">Precise<br /><em>intention.</em></h2>
-            <p class="split-text">The pointed heel: geometry as statement. Slingbacks, kitten heels, and stilettos for women who dress with conviction.</p>
-            <a href="blog.html?filter=point" class="btn btn--text">Explore pointed heels →</a>
-          </div>
-        </div>
+  <!-- EDITORIAL PREVIEW -->
+  <section class="editorial-preview section-pad" id="editorial">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">The Edit</span>
+        <h2 class="section-title">Words About Heels</h2>
+        <p class="section-subtitle">
+          Honest comparisons and buying guides — with the unflattering parts left in.
+        </p>
       </div>
-    </section>
 
-    <!-- ═══════════════════════════════════════════ EDITORIAL PREVIEW -->
-    <section class="editorial-preview section-pad" id="editorial">
-      <div class="container">
-        <div class="section-header reveal">
-          <span class="section-label">The Edit</span>
-          <h2 class="section-title">Words About Heels</h2>
-          <p class="section-subtitle">Honest comparisons, buying guides, and Scandinavian heel culture — no fluff.</p>
-        </div>
-
-        <div class="editorial-grid">
-
+      <div class="editorial-grid">
+        {featureEdit && (
           <article class="editorial-card editorial-card--feature reveal">
-            <a href="/atp-atelier-vs-flattered" class="editorial-card-image-link">
-              <img src="/editorial-1.png" alt="ATP Atelier vs Flattered editorial comparison" class="editorial-card-image" loading="lazy" />
+            <a href={featureEdit.url} class="editorial-card-image-link">
+              <img src={featureEdit.heroImage} alt={featureEdit.heroAlt} class="editorial-card-image" loading="lazy" />
             </a>
             <div class="editorial-card-body">
-              <span class="editorial-category">Brand Comparison</span>
-              <h3 class="editorial-title">
-                <a href="/atp-atelier-vs-flattered">ATP Atelier vs. Flattered: Which Swedish Heel Brand Is Actually Worth It?</a>
-              </h3>
-              <p class="editorial-excerpt">Two Stockholm studios, two approaches to the question of beautiful footwear. We compared the leather, the lasts, and the longevity.</p>
+              <span class="editorial-category">
+                {site.page_types[featureEdit.pageType]?.eyebrow ?? 'The Edit'}
+              </span>
+              <h3 class="editorial-title"><a href={featureEdit.url}>{featureEdit.title}</a></h3>
+              <p class="editorial-excerpt">{featureEdit.description}</p>
               <div class="editorial-meta">
-                <span class="editorial-read-time">8 min read</span>
-                <a href="/atp-atelier-vs-flattered" class="editorial-read-link">Read →</a>
+                <a href={featureEdit.url} class="editorial-read-link">Read →</a>
               </div>
             </div>
           </article>
+        )}
 
-          <div class="editorial-column">
-            <article class="editorial-card editorial-card--small reveal" data-delay="100">
+        <div class="editorial-column">
+          {restEdits.slice(0, 3).map((it, i) => (
+            <article class="editorial-card editorial-card--small reveal" data-delay={(i + 1) * 100}>
               <div class="editorial-card-body">
-                <span class="editorial-category">Buying Guide</span>
-                <h3 class="editorial-title">
-                  <a href="/blog">The Block Heel Buyer's Guide: 2024's Best Nordic Shapes</a>
-                </h3>
-                <p class="editorial-excerpt">From Flattered's square toe to Vagabond's refined utilitarian edge.</p>
-                <span class="editorial-read-time">6 min read</span>
+                <span class="editorial-category">
+                  {site.page_types[it.pageType]?.eyebrow ?? 'The Edit'}
+                </span>
+                <h3 class="editorial-title"><a href={it.url}>{it.title}</a></h3>
+                <p class="editorial-excerpt">{it.description}</p>
               </div>
             </article>
-
-            <article class="editorial-card editorial-card--small reveal" data-delay="200">
-              <div class="editorial-card-body">
-                <span class="editorial-category">Brand Story</span>
-                <h3 class="editorial-title">
-                  <a href="/blog">Why Scandinavian Shoes Last Longer</a>
-                </h3>
-                <p class="editorial-excerpt">The Nordic obsession with material honesty and what it means for your wardrobe longevity.</p>
-                <span class="editorial-read-time">5 min read</span>
-              </div>
-            </article>
-
-            <article class="editorial-card editorial-card--small reveal" data-delay="300">
-              <div class="editorial-card-body">
-                <span class="editorial-category">Heel Guide</span>
-                <h3 class="editorial-title">
-                  <a href="/blog">Kitten to Stiletto: Finding Your Nordic Heel Height</a>
-                </h3>
-                <p class="editorial-excerpt">A practical guide to matching heel height to lifestyle — the Scandinavian way.</p>
-                <span class="editorial-read-time">4 min read</span>
-              </div>
-            </article>
-          </div>
-
-        </div>
-
-        <div class="section-cta reveal">
-          <a href="/blog" class="btn btn--outline">Read The Full Edit</a>
+          ))}
         </div>
       </div>
-    </section>
 
-    <!-- ═══════════════════════════════════════════ CRAFT DETAIL BREAK -->
-    <section class="craft-break">
-      <div class="craft-break-inner">
-        <div class="craft-break-image-wrap reveal">
-          <img src="/craft-detail.png" alt="Macro stiletto heel tip on marble" class="craft-break-image" loading="lazy" />
-        </div>
-        <div class="craft-break-content reveal">
-          <p class="craft-quote">"The best heel is the one you forget you're wearing — until you want to remember."</p>
-          <span class="craft-attribution">Block & Point</span>
-        </div>
+      <div class="section-cta reveal">
+        <a href="/edit" class="btn btn--outline">Read The Full Edit</a>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ═══════════════════════════════════════════ NEWSLETTER -->
-    <section class="newsletter-section section-pad" id="newsletter">
-      <div class="container">
-        <div class="newsletter-inner reveal">
-          <div class="newsletter-header">
-            <span class="section-label">Weekly Newsletter</span>
-            <h2 class="newsletter-title">This Week in Heels</h2>
-            <p class="newsletter-subtitle">Five trending pairs, sourced from Scandi streets and global catwalks — delivered every Monday. No fluff. No filler.</p>
-          </div>
-          <form class="newsletter-form" id="newsletter-form" novalidate>
-            <div class="newsletter-input-group">
-              <input
-                type="email"
-                class="newsletter-input"
-                id="newsletter-email"
-                name="email"
-                placeholder="Your email address"
-                required
-                autocomplete="email"
-              />
-              <button type="submit" class="btn btn--primary newsletter-submit">Subscribe</button>
-            </div>
-            <p class="newsletter-disclaimer">Weekly. Unsubscribe anytime. We never share your address.</p>
-          </form>
-        </div>
+  <!-- CRAFT BREAK -->
+  <section class="craft-break">
+    <div class="craft-break-inner">
+      <div class="craft-break-image-wrap reveal">
+        <img src="/craft-detail.png" alt="Macro stiletto heel tip on marble" class="craft-break-image" loading="lazy" />
       </div>
-    </section>
-</Base>
+      <div class="craft-break-content reveal">
+        <p class="craft-quote">
+          “The best heel is the one you forget you're wearing — until you want to remember.”
+        </p>
+        <span class="craft-attribution">Block &amp; Point</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

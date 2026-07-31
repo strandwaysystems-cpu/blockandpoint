@@ -1,0 +1,62 @@
+---
+// Footer. Original Block & Point layout, columns driven by
+// src/data/site_architecture.json → global_menu.footer_nav.
+//
+// The affiliate disclosure is rendered site-wide here, not per page: FTC
+// guidance and the EU Omnibus Directive both want it prominent and
+// unavoidable, and the legal pages it links to are also what affiliate
+// networks check first during application review.
+import site from '../data/site_architecture.json';
+
+const columns = site.global_menu.footer_nav;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo" aria-label="Block &amp; Point">
+          <span class="footer-logo-text">B&amp;P</span>
+        </a>
+        <p class="footer-tagline">A curated edit of<br />Scandinavian heel design.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        {columns.map((col) => (
+          <div class="footer-nav-col">
+            <span class="footer-nav-label">{col.heading}</span>
+            {col.links.map((l) => (
+              <a
+                href={l.url}
+                class="footer-link"
+                {...(l.external ? { target: '_blank', rel: l.sponsored ? 'noopener sponsored nofollow' : 'noopener' } : {})}
+              >{l.label}</a>
+            ))}
+          </div>
+        ))}
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-legal">
+        &copy; {year} Block &amp; Point. Affiliate links used — we may earn a commission on purchases at no extra cost to you.
+      </p>
+      <div class="footer-legal-links">
+        <a href="/privacy" class="footer-link footer-link--small">Privacy</a>
+        <a href="/affiliate-disclosure" class="footer-link footer-link--small">Affiliate Disclosure</a>
+        <button type="button" class="footer-link footer-link--small cc-prefs-link" data-cc-open>Cookie settings</button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* The consent re-open control is a <button> for accessibility but must read
+     as one of the small footer links beside it. */
+  .cc-prefs-link {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+</style>

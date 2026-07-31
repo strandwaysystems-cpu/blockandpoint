@@ -1,0 +1,111 @@
+{
+  "site_name": "Block & Point",
+  "base_url": "https://blockandpoint.com",
+  "tagline": "A curated edit of Scandinavian heel design.",
+  "contact_email": "hello@blockandpoint.com",
+
+  "_note": "Nav and footer are rendered from this file by Header.astro / Footer.astro. Never hand-edit nav markup in a page. Page-type silos are the footwear adaptation of the Strandway v2 routing standard: /edit (money), /brands (hubs), /reviews (transactional), /guides (top of funnel).",
+
+  "page_types": {
+    "hub": {
+      "label": "Brand Hub",
+      "intent": "Navigational + commercial. The home base for one brand — routes visitors down to reviews, comparisons and the money pages that feature it.",
+      "silo": "/brands",
+      "schema": "Brand",
+      "eyebrow": "Brand Guide"
+    },
+    "commercial_listicle": {
+      "label": "Best-of Roundup",
+      "intent": "Commercial. Ranked edit of heels with a comparison table and affiliate CTAs. The primary money page.",
+      "silo": "/edit",
+      "schema": "ItemList",
+      "eyebrow": "The Edit"
+    },
+    "commercial_versus": {
+      "label": "A vs B Comparison",
+      "intent": "Commercial. Resolves a decision between two brands, then routes to the winner.",
+      "silo": "/edit",
+      "schema": "Article",
+      "eyebrow": "Compare"
+    },
+    "transactional_review": {
+      "label": "Honest Review",
+      "intent": "Transactional. One brand or pair, honest verdict, buy CTAs above and below.",
+      "silo": "/reviews",
+      "schema": "Review",
+      "eyebrow": "Honest Review"
+    },
+    "transactional_hub": {
+      "label": "Shop Grid",
+      "intent": "Transactional. Grid of shoppable pairs; every card is an affiliate click-out.",
+      "silo": "/edit",
+      "schema": "ItemList",
+      "eyebrow": "Shop the Edit"
+    },
+    "informational": {
+      "label": "Guide / How-To",
+      "intent": "Top-of-funnel. Answers a sizing, fit, care or styling question. Builds trust, captures search traffic, feeds the money pages.",
+      "silo": "/guides",
+      "schema": "Article",
+      "eyebrow": "Guide"
+    },
+    "page": {
+      "label": "Utility / Legal",
+      "intent": "Structural. About, legal, disclosure. No affiliate chrome, no eyebrow, no funnel role.",
+      "silo": "/",
+      "schema": "WebPage",
+      "eyebrow": null
+    }
+  },
+
+  "newsletter": {
+    "_note": "Set `endpoint` to the MailerLite (or other ESP) subscribe endpoint for this site to switch the signup form live. While it is null the form stays visible but tells visitors the list is not open yet — it never fakes a confirmation. See docs/MONETIZATION.md.",
+    "heading": "This Week in Heels",
+    "blurb": "Five trending pairs, sourced from Scandi streets and global catwalks — every Monday.",
+    "endpoint": null
+  },
+
+  "global_menu": {
+    "_nav_note": "The header keeps the original Block & Point split layout — two links left of the wordmark, two right — so the masthead design is unchanged. Flat links only, no dropdowns; each points at a silo index that lists everything in that silo.",
+    "header_nav_left": [
+      { "label": "The Edit", "url": "/edit", "key": "edit" },
+      { "label": "Brands", "url": "/brands", "key": "brands" }
+    ],
+    "header_nav_right": [
+      { "label": "Guides", "url": "/guides", "key": "guides" },
+      { "label": "Reviews", "url": "/reviews", "key": "reviews" }
+    ],
+    "header_cta": { "label": "Newsletter", "url": "/#newsletter" },
+
+    "footer_nav": [
+      {
+        "heading": "Explore",
+        "links": [
+          { "label": "The Edit", "url": "/edit" },
+          { "label": "Brand directory", "url": "/brands" },
+          { "label": "Honest reviews", "url": "/reviews" },
+          { "label": "Guides", "url": "/guides" }
+        ]
+      },
+      {
+        "heading": "Styles",
+        "links": [
+          { "label": "Block heels", "url": "/edit/best-scandinavian-block-heels" },
+          { "label": "Comfortable heels", "url": "/edit/most-comfortable-designer-heels" },
+          { "label": "Wide-fit heels", "url": "/edit/best-scandinavian-heels-wide-feet" },
+          { "label": "Heel height guide", "url": "/guides/heel-height-guide" }
+        ]
+      },
+      {
+        "heading": "About",
+        "links": [
+          { "label": "About Block & Point", "url": "/about" },
+          { "label": "Affiliate disclosure", "url": "/affiliate-disclosure" },
+          { "label": "Privacy policy", "url": "/privacy" },
+          { "label": "Cookie policy", "url": "/cookie-policy" },
+          { "label": "Contact", "url": "mailto:hello@blockandpoint.com" }
+        ]
+      }
+    ]
+  }
+}
