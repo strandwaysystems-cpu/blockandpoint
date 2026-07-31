@@ -66,8 +66,16 @@ Both run in CI and should be run locally before pushing:
 
 ## Hosting
 
+**See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)** — it covers the Hostinger setup, the
+GLIBC/Rollup build failure and why changing the Node version does not fix it, and the
+`.htaccess` rules the silo layout depends on.
+
 Static output, host-portable per the Strandway web standard. `public/_redirects`
 covers Cloudflare Pages; `public/.htaccess` covers Apache/Hostinger, including the
 extensionless-URL rewrite that `build.format: 'file'` requires.
 
-Build command `npm run build`, output directory `dist`, `NODE_VERSION=20`.
+Build command `npm run build`, output directory `dist`, Node 20 (18.17.1+ works).
+
+> **Do not remove the `rollup` override in `package.json`.** Rollup 4's native binary
+> needs GLIBC 2.29+, which Hostinger's build image does not have; the override swaps in
+> Rollup's WASM build, which has no libc requirement. Removing it breaks the deploy.
